@@ -459,12 +459,31 @@ function init() {
       solve();
     }
   }
+  // Backspace on empty input moves to previous blank (or previous input)
+  function jumpToPrevBlank(from) {
+    const allInputs = [...document.querySelectorAll('input[type="number"], input[type="text"]')];
+    const currentIdx = allInputs.indexOf(from);
+    for (let offset = 1; offset <= allInputs.length; offset++) {
+      const inp = allInputs[(currentIdx - offset + allInputs.length) % allInputs.length];
+      if (inp.value === '') { inp.focus(); inp.select(); return; }
+    }
+    if (currentIdx > 0) {
+      allInputs[currentIdx - 1].focus();
+      allInputs[currentIdx - 1].select();
+    }
+  }
+
   document.querySelectorAll('input[type="number"], input[type="text"]').forEach(inp => {
     inp.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
         e.preventDefault();
         e.stopPropagation();
         jumpToNextBlank(e.target);
+      }
+      if (e.key === 'Backspace' && e.target.value === '') {
+        e.preventDefault();
+        e.stopPropagation();
+        jumpToPrevBlank(e.target);
       }
     });
   });

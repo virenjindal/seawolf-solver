@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Seawolf Solver — McKinsey Solve</title>
+<style>
+  :root {
+    --bg: #0a1628;
+    --card: #111d33;
+    --border: #1e3050;
+    --accent: #00b4d8;
+    --accent2: #0077b6;
+    --green: #2dd4bf;
+    --red: #f87171;
+    --yellow: #fbbf24;
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+    --input-bg: #0f1a2e;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 20px;
+  }
+  h1 {
+    text-align: center;
+    font-size: 1.8rem;
+    margin-bottom: 4px;
+    background: linear-gradient(135deg, var(--accent), var(--green));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .subtitle {
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.85rem;
+    margin-bottom: 24px;
+  }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+  .card h2 {
+    font-size: 1.1rem;
+    margin-bottom: 14px;
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card h2 .badge {
+    background: var(--accent2);
+    color: white;
+    font-size: 0.7rem;
+    padding: 2px 8px;
+    border-radius: 10px;
+  }
+
+  /* Site Requirements */
+  .req-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .req-item label {
+    display: block;
+    font-size: 0.78rem;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+  .range-inputs {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+  .range-inputs span { color: var(--muted); font-size: 0.8rem; }
+  input, select {
+    background: var(--input-bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 6px;
+    padding: 7px 10px;
+    font-size: 0.9rem;
+    width: 100%;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  input:focus, select:focus {
+    border-color: var(--accent);
+  }
+  input[type="number"] { width: 60px; text-align: center; }
+  .attr-name-input { width: 100%; margin-bottom: 4px; }
+
+  /* Trait section */
+  .trait-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 8px;
+  }
+  .trait-row label {
+    font-size: 0.78rem;
+    color: var(--muted);
+    margin-bottom: 4px;
+    display: block;
+  }
+
+  /* Microbe Table */
+  .microbe-table-wrap {
+    overflow-x: auto;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+  }
+  thead th {
+    background: var(--input-bg);
+    padding: 8px 10px;
+    text-align: center;
+    font-weight: 600;
+    color: var(--muted);
+    border-bottom: 2px solid var(--border);
+    white-space: nowrap;
+  }
+  thead th:first-child { text-align: left; }
+  tbody td {
+    padding: 6px 8px;
+    text-align: center;
+    border-bottom: 1px solid var(--border);
+  }
+  tbody td:first-child { text-align: left; }
+  tbody tr:hover { background: rgba(0,180,216,0.05); }
+  table input[type="number"] { width: 52px; }
+  table input[type="text"] { width: 110px; }
+  table select { width: 130px; }
+  .trait-check {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: var(--accent);
+  }
+  .trait-check.desired { accent-color: var(--green); }
+  .trait-check.undesired { accent-color: var(--red); }
+
+  /* Buttons */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: white;
+  }
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(0,180,216,0.3); }
+  .btn-secondary {
+    background: var(--input-bg);
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+  .btn-secondary:hover { border-color: var(--accent); }
+  .actions { display: flex; gap: 10px; margin-top: 16px; justify-content: center; }
+
+  /* Results */
+  .result-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 12px;
+    transition: border-color 0.2s;
+  }
+  .result-card.perfect { border-color: var(--green); }
+  .result-card.good { border-color: var(--yellow); }
+  .result-card.bad { border-color: var(--red); }
+  .result-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  .result-rank {
+    font-size: 1.1rem;
+    font-weight: 700;
+  }
+  .efficiency {
+    font-size: 1.2rem;
+    font-weight: 700;
+    padding: 2px 12px;
+    border-radius: 6px;
+  }
+  .efficiency.e100 { background: rgba(45,212,191,0.15); color: var(--green); }
+  .efficiency.e80 { background: rgba(251,191,36,0.15); color: var(--yellow); }
+  .efficiency.e60 { background: rgba(248,113,113,0.15); color: var(--red); }
+  .efficiency.elow { background: rgba(248,113,113,0.15); color: var(--red); }
+
+  .result-microbes {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .microbe-chip {
+    background: var(--input-bg);
+    border-radius: 6px;
+    padding: 8px 10px;
+    font-size: 0.8rem;
+  }
+  .microbe-chip .name { font-weight: 600; margin-bottom: 3px; color: var(--accent); }
+  .microbe-chip .vals { color: var(--muted); }
+  .microbe-chip .trait-tag {
+    display: inline-block;
+    margin-top: 3px;
+    font-size: 0.7rem;
+    padding: 1px 6px;
+    border-radius: 4px;
+    background: rgba(0,180,216,0.15);
+    color: var(--accent);
+  }
+  .microbe-chip .trait-tag.desired { background: rgba(45,212,191,0.15); color: var(--green); }
+  .microbe-chip .trait-tag.undesired { background: rgba(248,113,113,0.15); color: var(--red); }
+
+  .result-averages {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+  .avg-item {
+    background: var(--input-bg);
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-size: 0.8rem;
+    text-align: center;
+  }
+  .avg-item .label { color: var(--muted); font-size: 0.72rem; }
+  .avg-item .value { font-weight: 700; font-size: 1rem; }
+  .avg-item .range { color: var(--muted); font-size: 0.7rem; }
+  .avg-item.pass .value { color: var(--green); }
+  .avg-item.fail .value { color: var(--red); }
+
+  .penalties {
+    font-size: 0.78rem;
+    color: var(--muted);
+  }
+  .penalties .penalty { color: var(--red); }
+  .penalties .pass { color: var(--green); }
+
+  .no-results {
+    text-align: center;
+    padding: 40px;
+    color: var(--muted);
+    font-size: 1rem;
+  }
+
+  .filter-bar {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .filter-bar label { font-size: 0.8rem; color: var(--muted); }
+  .filter-btn {
+    padding: 5px 14px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--input-bg);
+    color: var(--text);
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: all 0.15s;
+  }
+  .filter-btn.active {
+    background: var(--accent2);
+    border-color: var(--accent);
+    color: white;
+  }
+  .result-count {
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+
+  .instructions {
+    background: rgba(0,180,216,0.08);
+    border: 1px solid rgba(0,180,216,0.2);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-bottom: 20px;
+    font-size: 0.82rem;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+  .instructions strong { color: var(--text); }
+
+  @media (max-width: 700px) {
+    .req-grid { grid-template-columns: 1fr; }
+    .trait-row { grid-template-columns: 1fr; }
+    .result-microbes { grid-template-columns: 1fr; }
+    .result-averages { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<h1>Seawolf Solver</h1>
+<p class="subtitle">McKinsey Solve — Final Stage Optimizer</p>
+
+<div class="instructions">
+  <strong>How to use:</strong> Enter your site's attribute names, target ranges, and traits below. Then fill in all 10 microbes from your prospect pool. Click <strong>Find Best Combinations</strong> to see all 120 possible 3-microbe combos ranked by efficiency score. A perfect 100% means all averages are in range, the desired trait is present, and no undesired trait is included.
+</div>
+
+<!-- Site Requirements -->
+<div class="card">
+  <h2>Site Requirements</h2>
+  <div class="req-grid">
+    <div class="req-item">
+      <label>Attribute 1 Name</label>
+      <input type="text" class="attr-name-input" id="attr1Name" placeholder="e.g. Density" value="Attribute 1">
+      <label style="margin-top:6px">Target Range</label>
+      <div class="range-inputs">
+        <input type="number" id="attr1Min" min="1" max="10" placeholder="Min">
+        <span>to</span>
+        <input type="number" id="attr1Max" min="1" max="10" placeholder="Max">
+      </div>
+    </div>
+    <div class="req-item">
+      <label>Attribute 2 Name</label>
+      <input type="text" class="attr-name-input" id="attr2Name" placeholder="e.g. Energy" value="Attribute 2">
+      <label style="margin-top:6px">Target Range</label>
+      <div class="range-inputs">
+        <input type="number" id="attr2Min" min="1" max="10" placeholder="Min">
+        <span>to</span>
+        <input type="number" id="attr2Max" min="1" max="10" placeholder="Max">
+      </div>
+    </div>
+    <div class="req-item">
+      <label>Attribute 3 Name</label>
+      <input type="text" class="attr-name-input" id="attr3Name" placeholder="e.g. Size" value="Attribute 3">
+      <label style="margin-top:6px">Target Range</label>
+      <div class="range-inputs">
+        <input type="number" id="attr3Min" min="1" max="10" placeholder="Min">
+        <span>to</span>
+        <input type="number" id="attr3Max" min="1" max="10" placeholder="Max">
+      </div>
+    </div>
+  </div>
+  <div class="instructions" style="margin-top:12px;margin-bottom:0">
+    For each microbe below, check <strong style="color:var(--green)">Desired</strong> if it has the site's desired trait, or <strong style="color:var(--red)">Undesired</strong> if it has the undesired trait. Leave both unchecked if neither applies.
+  </div>
+</div>
+
+<!-- Microbe Input Table -->
+<div class="card">
+  <h2>Prospect Pool <span class="badge">10 Microbes</span></h2>
+  <div class="microbe-table-wrap">
+    <table id="microbeTable">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th id="th-attr1">Attr 1</th>
+          <th id="th-attr2">Attr 2</th>
+          <th id="th-attr3">Attr 3</th>
+          <th style="color:var(--green)">Desired</th>
+          <th style="color:var(--red)">Undesired</th>
+        </tr>
+      </thead>
+      <tbody id="microbeBody"></tbody>
+    </table>
+  </div>
+  <div class="actions">
+    <button class="btn btn-secondary" onclick="clearAll()">Clear All</button>
+    <button class="btn btn-secondary" onclick="loadExample()">Load Example</button>
+    <button class="btn btn-primary" onclick="solve()">Find Best Combinations</button>
+  </div>
+</div>
+
+<!-- Results -->
+<div id="resultsSection" style="display:none;">
+  <div class="card">
+    <h2>Results <span class="badge" id="resultsBadge"></span></h2>
+    <div class="filter-bar">
+      <label>Filter:</label>
+      <button class="filter-btn active" data-filter="all" onclick="filterResults('all', this)">All</button>
+      <button class="filter-btn" data-filter="100" onclick="filterResults('100', this)">100%</button>
+      <button class="filter-btn" data-filter="80" onclick="filterResults('80', this)">80%</button>
+      <button class="filter-btn" data-filter="60" onclick="filterResults('60', this)">60%</button>
+      <button class="filter-btn" data-filter="below" onclick="filterResults('below', this)">Below 60%</button>
+    </div>
+    <div class="result-count" id="resultCount"></div>
+    <div id="resultsContainer"></div>
+  </div>
+</div>
+
+<script>
+const MICROBE_COUNT = 10;
+let allResults = [];
+
+function init() {
+  const tbody = document.getElementById('microbeBody');
+  for (let i = 0; i < MICROBE_COUNT; i++) {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td style="color:var(--muted);font-weight:600">${i + 1}</td>
+      <td><input type="number" id="m${i}a1" min="1" max="10"></td>
+      <td><input type="number" id="m${i}a2" min="1" max="10"></td>
+      <td><input type="number" id="m${i}a3" min="1" max="10"></td>
+      <td><input type="checkbox" class="trait-check desired" id="m${i}desired"></td>
+      <td><input type="checkbox" class="trait-check undesired" id="m${i}undesired"></td>
+    `;
+    tbody.appendChild(tr);
+    // Make desired/undesired mutually exclusive
+    document.getElementById(`m${i}desired`).addEventListener('change', ((idx) => (e) => {
+      if (e.target.checked) document.getElementById(`m${idx}undesired`).checked = false;
+    })(i));
+    document.getElementById(`m${i}undesired`).addEventListener('change', ((idx) => (e) => {
+      if (e.target.checked) document.getElementById(`m${idx}desired`).checked = false;
+    })(i));
+  }
+
+  // Sync attribute names to table headers
+  ['attr1Name', 'attr2Name', 'attr3Name'].forEach((id, idx) => {
+    document.getElementById(id).addEventListener('input', (e) => {
+      document.getElementById(`th-attr${idx+1}`).textContent = e.target.value || `Attr ${idx+1}`;
+    });
+  });
+}
+
+function getMicrobes() {
+  const microbes = [];
+  for (let i = 0; i < MICROBE_COUNT; i++) {
+    const a1 = parseFloat(document.getElementById(`m${i}a1`).value);
+    const a2 = parseFloat(document.getElementById(`m${i}a2`).value);
+    const a3 = parseFloat(document.getElementById(`m${i}a3`).value);
+    const hasDesired = document.getElementById(`m${i}desired`).checked;
+    const hasUndesired = document.getElementById(`m${i}undesired`).checked;
+    if (isNaN(a1) || isNaN(a2) || isNaN(a3)) return null;
+    microbes.push({ idx: i, num: i + 1, a1, a2, a3, hasDesired, hasUndesired });
+  }
+  return microbes;
+}
+
+function getRequirements() {
+  return {
+    attr1: { name: document.getElementById('attr1Name').value || 'Attr 1', min: parseFloat(document.getElementById('attr1Min').value), max: parseFloat(document.getElementById('attr1Max').value) },
+    attr2: { name: document.getElementById('attr2Name').value || 'Attr 2', min: parseFloat(document.getElementById('attr2Min').value), max: parseFloat(document.getElementById('attr2Max').value) },
+    attr3: { name: document.getElementById('attr3Name').value || 'Attr 3', min: parseFloat(document.getElementById('attr3Min').value), max: parseFloat(document.getElementById('attr3Max').value) },
+  };
+}
+
+function solve() {
+  const microbes = getMicrobes();
+  if (!microbes) {
+    alert('Please fill in all 3 attribute values for every microbe.');
+    return;
+  }
+  const req = getRequirements();
+  if ([req.attr1.min, req.attr1.max, req.attr2.min, req.attr2.max, req.attr3.min, req.attr3.max].some(isNaN)) {
+    alert('Please fill in all target ranges.');
+    return;
+  }
+
+  const results = [];
+  // Generate all C(10,3) = 120 combinations
+  for (let i = 0; i < MICROBE_COUNT - 2; i++) {
+    for (let j = i + 1; j < MICROBE_COUNT - 1; j++) {
+      for (let k = j + 1; k < MICROBE_COUNT; k++) {
+        const combo = [microbes[i], microbes[j], microbes[k]];
+        const avg1 = (combo[0].a1 + combo[1].a1 + combo[2].a1) / 3;
+        const avg2 = (combo[0].a2 + combo[1].a2 + combo[2].a2) / 3;
+        const avg3 = (combo[0].a3 + combo[1].a3 + combo[2].a3) / 3;
+
+        let penalties = 0;
+        const checks = [];
+
+        // Attribute range checks
+        const a1Pass = avg1 >= req.attr1.min && avg1 <= req.attr1.max;
+        const a2Pass = avg2 >= req.attr2.min && avg2 <= req.attr2.max;
+        const a3Pass = avg3 >= req.attr3.min && avg3 <= req.attr3.max;
+
+        if (!a1Pass) { penalties += 20; checks.push(`${req.attr1.name} avg out of range`); }
+        if (!a2Pass) { penalties += 20; checks.push(`${req.attr2.name} avg out of range`); }
+        if (!a3Pass) { penalties += 20; checks.push(`${req.attr3.name} avg out of range`); }
+
+        // Desired trait check
+        const hasDesired = combo.some(m => m.hasDesired);
+        if (!hasDesired) { penalties += 20; checks.push('Missing desired trait'); }
+
+        // Undesired trait check
+        combo.forEach(m => {
+          if (m.hasUndesired) {
+            penalties += 20;
+            checks.push(`Microbe #${m.num} has undesired trait`);
+          }
+        });
+
+        const efficiency = Math.max(0, 100 - penalties);
+
+        results.push({
+          combo,
+          avg1, avg2, avg3,
+          a1Pass, a2Pass, a3Pass,
+          hasDesired,
+          efficiency,
+          checks
+        });
+      }
+    }
+  }
+
+  results.sort((a, b) => {
+    if (b.efficiency !== a.efficiency) return b.efficiency - a.efficiency;
+    // Tiebreak: prefer combos closer to range midpoints
+    const midScore = (r) => {
+      const mid1 = (req.attr1.min + req.attr1.max) / 2;
+      const mid2 = (req.attr2.min + req.attr2.max) / 2;
+      const mid3 = (req.attr3.min + req.attr3.max) / 2;
+      return Math.abs(r.avg1 - mid1) + Math.abs(r.avg2 - mid2) + Math.abs(r.avg3 - mid3);
+    };
+    return midScore(a) - midScore(b);
+  });
+
+  allResults = results;
+  renderResults(results);
+  document.getElementById('resultsSection').style.display = 'block';
+  document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth' });
+}
+
+function renderResults(results) {
+  const req = getRequirements();
+  const container = document.getElementById('resultsContainer');
+  document.getElementById('resultsBadge').textContent = `${results.length} combinations`;
+
+  const perfect = results.filter(r => r.efficiency === 100).length;
+  document.getElementById('resultCount').textContent =
+    `${perfect} perfect (100%) out of ${results.length} shown`;
+
+  if (results.length === 0) {
+    container.innerHTML = '<div class="no-results">No combinations match this filter.</div>';
+    return;
+  }
+
+  container.innerHTML = results.map((r, idx) => {
+    const eClass = r.efficiency === 100 ? 'perfect' : r.efficiency >= 80 ? 'good' : 'bad';
+    const eColor = r.efficiency === 100 ? 'e100' : r.efficiency >= 80 ? 'e80' : r.efficiency >= 60 ? 'e60' : 'elow';
+
+    return `
+      <div class="result-card ${eClass}">
+        <div class="result-header">
+          <span class="result-rank">#${idx + 1}</span>
+          <span class="efficiency ${eColor}">${r.efficiency}%</span>
+        </div>
+        <div class="result-microbes">
+          ${r.combo.map(m => {
+            const traitTag = m.hasDesired ? '<span class="trait-tag desired">Desired</span>'
+              : m.hasUndesired ? '<span class="trait-tag undesired">Undesired</span>' : '';
+            return `<div class="microbe-chip">
+              <div class="name">Microbe #${m.num}</div>
+              <div class="vals">${req.attr1.name}: ${m.a1} | ${req.attr2.name}: ${m.a2} | ${req.attr3.name}: ${m.a3}</div>
+              ${traitTag}
+            </div>`;
+          }).join('')}
+        </div>
+        <div class="result-averages">
+          <div class="avg-item ${r.a1Pass ? 'pass' : 'fail'}">
+            <div class="label">${req.attr1.name} Avg</div>
+            <div class="value">${r.avg1.toFixed(2)}</div>
+            <div class="range">${req.attr1.min} – ${req.attr1.max}</div>
+          </div>
+          <div class="avg-item ${r.a2Pass ? 'pass' : 'fail'}">
+            <div class="label">${req.attr2.name} Avg</div>
+            <div class="value">${r.avg2.toFixed(2)}</div>
+            <div class="range">${req.attr2.min} – ${req.attr2.max}</div>
+          </div>
+          <div class="avg-item ${r.a3Pass ? 'pass' : 'fail'}">
+            <div class="label">${req.attr3.name} Avg</div>
+            <div class="value">${r.avg3.toFixed(2)}</div>
+            <div class="range">${req.attr3.min} – ${req.attr3.max}</div>
+          </div>
+        </div>
+        ${r.checks.length > 0 ? `<div class="penalties">${r.checks.map(c => `<span class="penalty">-20%: ${c}</span>`).join(' &nbsp;|&nbsp; ')}</div>` : '<div class="penalties"><span class="pass">All checks passed</span></div>'}
+      </div>
+    `;
+  }).join('');
+}
+
+function filterResults(filter, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+
+  let filtered;
+  if (filter === 'all') filtered = allResults;
+  else if (filter === '100') filtered = allResults.filter(r => r.efficiency === 100);
+  else if (filter === '80') filtered = allResults.filter(r => r.efficiency === 80);
+  else if (filter === '60') filtered = allResults.filter(r => r.efficiency === 60);
+  else filtered = allResults.filter(r => r.efficiency < 60);
+
+  renderResults(filtered);
+}
+
+function clearAll() {
+  for (let i = 0; i < MICROBE_COUNT; i++) {
+    document.getElementById(`m${i}a1`).value = '';
+    document.getElementById(`m${i}a2`).value = '';
+    document.getElementById(`m${i}a3`).value = '';
+    document.getElementById(`m${i}desired`).checked = false;
+    document.getElementById(`m${i}undesired`).checked = false;
+  }
+  document.getElementById('resultsSection').style.display = 'none';
+}
+
+function loadExample() {
+  // Example from game research
+  document.getElementById('attr1Name').value = 'Density';
+  document.getElementById('attr2Name').value = 'Energy';
+  document.getElementById('attr3Name').value = 'Size';
+  document.getElementById('attr1Min').value = 6;
+  document.getElementById('attr1Max').value = 8;
+  document.getElementById('attr2Min').value = 2;
+  document.getElementById('attr2Max').value = 4;
+  document.getElementById('attr3Min').value = 8;
+  document.getElementById('attr3Max').value = 10;
+  // Update headers
+  document.getElementById('th-attr1').textContent = 'Density';
+  document.getElementById('th-attr2').textContent = 'Energy';
+  document.getElementById('th-attr3').textContent = 'Size';
+
+  const examples = [
+    { a1: 8, a2: 3, a3: 8, desired: true, undesired: false },
+    { a1: 8, a2: 2, a3: 10, desired: false, undesired: false },
+    { a1: 4, a2: 5, a3: 8, desired: false, undesired: false },
+    { a1: 7, a2: 3, a3: 9, desired: true, undesired: false },
+    { a1: 6, a2: 4, a3: 7, desired: false, undesired: true },
+    { a1: 9, a2: 1, a3: 10, desired: false, undesired: false },
+    { a1: 5, a2: 6, a3: 9, desired: false, undesired: false },
+    { a1: 7, a2: 2, a3: 8, desired: true, undesired: false },
+    { a1: 8, a2: 4, a3: 10, desired: false, undesired: false },
+    { a1: 6, a2: 3, a3: 9, desired: false, undesired: true },
+  ];
+
+  examples.forEach((m, i) => {
+    document.getElementById(`m${i}a1`).value = m.a1;
+    document.getElementById(`m${i}a2`).value = m.a2;
+    document.getElementById(`m${i}a3`).value = m.a3;
+    document.getElementById(`m${i}desired`).checked = m.desired;
+    document.getElementById(`m${i}undesired`).checked = m.undesired;
+  });
+}
+
+init();
+</script>
+</body>
+</html>

@@ -441,6 +441,22 @@ function init() {
       document.getElementById(`th-attr${idx+1}`).textContent = e.target.value || `Attr ${idx+1}`;
     });
   });
+
+  // Enter key moves to next blank input
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter') return;
+    e.preventDefault();
+    const allInputs = [...document.querySelectorAll('input[type="number"], input[type="text"]')];
+    const current = document.activeElement;
+    const currentIdx = allInputs.indexOf(current);
+    // Search from after current, then wrap around
+    for (let offset = 1; offset <= allInputs.length; offset++) {
+      const inp = allInputs[(currentIdx + offset) % allInputs.length];
+      if (inp.value === '') { inp.focus(); inp.select(); return; }
+    }
+    // All filled — run solve
+    solve();
+  });
 }
 
 function getMicrobes() {

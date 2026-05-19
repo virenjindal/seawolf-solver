@@ -14,6 +14,7 @@
     --green: #2dd4bf;
     --red: #f87171;
     --yellow: #fbbf24;
+    --orange: #fb923c;
     --text: #e2e8f0;
     --muted: #94a3b8;
     --input-bg: #0f1a2e;
@@ -54,6 +55,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
+    flex-wrap: wrap;
   }
   .card h2 .badge {
     background: var(--accent2);
@@ -76,6 +78,12 @@
     color: var(--muted);
     margin-bottom: 4px;
   }
+  .req-item .attr-label {
+    font-weight: 600;
+    color: var(--text);
+    font-size: 0.9rem;
+    margin-bottom: 6px;
+  }
   .range-inputs {
     display: flex;
     gap: 6px;
@@ -96,32 +104,14 @@
   input:focus, select:focus {
     border-color: var(--accent);
   }
-  input[type="number"] { width: 60px; text-align: center; }
-  .attr-name-input { width: 100%; margin-bottom: 4px; }
-
-  /* Trait section */
-  .trait-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin-top: 8px;
-  }
-  .trait-row label {
-    font-size: 0.78rem;
-    color: var(--muted);
-    margin-bottom: 4px;
-    display: block;
-  }
+  /* Remove number spinners */
+  input[type="number"] { width: 60px; text-align: center; -moz-appearance: textfield; }
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 
   /* Microbe Table */
-  .microbe-table-wrap {
-    overflow-x: auto;
-  }
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.85rem;
-  }
+  .microbe-table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
   thead th {
     background: var(--input-bg);
     padding: 8px 10px;
@@ -140,8 +130,6 @@
   tbody td:first-child { text-align: left; }
   tbody tr:hover { background: rgba(0,180,216,0.05); }
   table input[type="number"] { width: 52px; }
-  table input[type="text"] { width: 110px; }
-  table select { width: 130px; }
   .trait-check {
     width: 18px;
     height: 18px;
@@ -175,7 +163,12 @@
     border: 1px solid var(--border);
   }
   .btn-secondary:hover { border-color: var(--accent); }
-  .actions { display: flex; gap: 10px; margin-top: 16px; justify-content: center; }
+  .btn-success {
+    background: linear-gradient(135deg, var(--green), #059669);
+    color: white;
+  }
+  .btn-success:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(45,212,191,0.3); }
+  .actions { display: flex; gap: 10px; margin-top: 16px; justify-content: center; flex-wrap: wrap; }
 
   /* Results */
   .result-card {
@@ -195,10 +188,7 @@
     align-items: center;
     margin-bottom: 10px;
   }
-  .result-rank {
-    font-size: 1.1rem;
-    font-weight: 700;
-  }
+  .result-rank { font-size: 1.1rem; font-weight: 700; }
   .efficiency {
     font-size: 1.2rem;
     font-weight: 700;
@@ -255,10 +245,7 @@
   .avg-item.pass .value { color: var(--green); }
   .avg-item.fail .value { color: var(--red); }
 
-  .penalties {
-    font-size: 0.78rem;
-    color: var(--muted);
-  }
+  .penalties { font-size: 0.78rem; color: var(--muted); }
   .penalties .penalty { color: var(--red); }
   .penalties .pass { color: var(--green); }
 
@@ -310,11 +297,87 @@
   }
   .instructions strong { color: var(--text); }
 
+  /* Pool Builder */
+  .builder-round {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px;
+    margin-bottom: 14px;
+    background: var(--input-bg);
+  }
+  .builder-round h3 {
+    font-size: 0.95rem;
+    margin-bottom: 10px;
+    color: var(--text);
+  }
+  .builder-round h3 .round-badge {
+    font-size: 0.7rem;
+    padding: 2px 8px;
+    border-radius: 10px;
+    margin-left: 6px;
+  }
+  .round-pending .round-badge { background: var(--accent2); color: white; }
+  .round-done .round-badge { background: rgba(45,212,191,0.2); color: var(--green); }
+
+  .candidate-row {
+    display: grid;
+    grid-template-columns: auto 1fr 1fr 1fr auto auto;
+    gap: 6px;
+    align-items: center;
+    padding: 4px 0;
+  }
+  .candidate-label {
+    font-size: 0.8rem;
+    color: var(--muted);
+    font-weight: 600;
+    min-width: 20px;
+  }
+  .best-pick {
+    background: rgba(45,212,191,0.1);
+    border: 1px solid var(--green);
+    border-radius: 6px;
+    padding: 2px 0;
+  }
+  .pick-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+  }
+  .pick-best { background: rgba(45,212,191,0.2); color: var(--green); }
+  .pick-ok { background: rgba(251,191,36,0.2); color: var(--yellow); }
+  .pick-bad { background: rgba(248,113,113,0.2); color: var(--red); }
+  .score-detail {
+    font-size: 0.72rem;
+    color: var(--muted);
+    margin-top: 4px;
+    padding: 4px 8px;
+  }
+
+  .locked-microbes {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+  }
+  .locked-chip {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 4px 10px;
+    font-size: 0.75rem;
+    color: var(--muted);
+  }
+  .locked-chip .lnum { color: var(--accent); font-weight: 600; }
+  .locked-chip.has-desired { border-color: rgba(45,212,191,0.3); }
+  .locked-chip.has-undesired { border-color: rgba(248,113,113,0.3); }
+
   @media (max-width: 700px) {
     .req-grid { grid-template-columns: 1fr; }
-    .trait-row { grid-template-columns: 1fr; }
     .result-microbes { grid-template-columns: 1fr; }
     .result-averages { grid-template-columns: 1fr; }
+    .candidate-row { grid-template-columns: auto 1fr 1fr 1fr auto auto; font-size: 0.8rem; }
   }
 </style>
 </head>
@@ -324,7 +387,7 @@
 <p class="subtitle">McKinsey Solve — Final Stage Optimizer</p>
 
 <div class="instructions">
-  <strong>How to use:</strong> Enter your site's attribute names, target ranges, and traits below. Then fill in all 10 microbes from your prospect pool. Click <strong>Find Best Combinations</strong> to see all 120 possible 3-microbe combos ranked by efficiency score. A perfect 100% means all averages are in range, the desired trait is present, and no undesired trait is included.
+  <strong>How to use:</strong> Enter target ranges below. Use the <strong>Pool Builder</strong> to pick the best microbe each round (starting from 6, choosing 1-of-3 four times to reach 10). Then use <strong>Final Solver</strong> to find the best 3-microbe treatment from your full pool. Check <strong style="color:var(--green)">D</strong> for desired trait, <strong style="color:var(--red)">U</strong> for undesired. Press <strong>Enter</strong> to jump to the next blank, <strong>Backspace</strong> on empty to go back.
 </div>
 
 <!-- Site Requirements -->
@@ -332,9 +395,8 @@
   <h2>Site Requirements</h2>
   <div class="req-grid">
     <div class="req-item">
-      <label>Attribute 1 Name</label>
-      <input type="text" class="attr-name-input" id="attr1Name" placeholder="e.g. Density" value="Attribute 1">
-      <label style="margin-top:6px">Target Range</label>
+      <div class="attr-label">Attribute 1</div>
+      <label>Target Range</label>
       <div class="range-inputs">
         <input type="number" id="attr1Min" min="1" max="10" placeholder="Min">
         <span>to</span>
@@ -342,9 +404,8 @@
       </div>
     </div>
     <div class="req-item">
-      <label>Attribute 2 Name</label>
-      <input type="text" class="attr-name-input" id="attr2Name" placeholder="e.g. Energy" value="Attribute 2">
-      <label style="margin-top:6px">Target Range</label>
+      <div class="attr-label">Attribute 2</div>
+      <label>Target Range</label>
       <div class="range-inputs">
         <input type="number" id="attr2Min" min="1" max="10" placeholder="Min">
         <span>to</span>
@@ -352,9 +413,8 @@
       </div>
     </div>
     <div class="req-item">
-      <label>Attribute 3 Name</label>
-      <input type="text" class="attr-name-input" id="attr3Name" placeholder="e.g. Size" value="Attribute 3">
-      <label style="margin-top:6px">Target Range</label>
+      <div class="attr-label">Attribute 3</div>
+      <label>Target Range</label>
       <div class="range-inputs">
         <input type="number" id="attr3Min" min="1" max="10" placeholder="Min">
         <span>to</span>
@@ -362,32 +422,55 @@
       </div>
     </div>
   </div>
-  <div class="instructions" style="margin-top:12px;margin-bottom:0">
-    For each microbe below, check <strong style="color:var(--green)">Desired</strong> if it has the site's desired trait, or <strong style="color:var(--red)">Undesired</strong> if it has the undesired trait. Leave both unchecked if neither applies.
-  </div>
 </div>
 
-<!-- Microbe Input Table -->
+<!-- Pool Builder -->
+<div class="card" id="builderCard">
+  <h2>Pool Builder <span class="badge">Step 3 — Build Prospect Pool</span></h2>
+  <div class="instructions" style="margin-bottom:14px">
+    Enter your <strong>6 pre-loaded microbes</strong>, then for each round enter the <strong>3 candidates</strong>. Click <strong>Evaluate Round</strong> to see which candidate is best. The winner is locked in and carried forward.
+  </div>
+
+  <!-- 6 base microbes -->
+  <div style="margin-bottom:16px">
+    <h3 style="font-size:0.9rem;color:var(--accent);margin-bottom:8px">Pre-loaded Microbes (6)</h3>
+    <div class="microbe-table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th><th>A1</th><th>A2</th><th>A3</th>
+            <th style="color:var(--green)">D</th><th style="color:var(--red)">U</th>
+          </tr>
+        </thead>
+        <tbody id="baseBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 4 rounds -->
+  <div id="roundsContainer"></div>
+</div>
+
+<!-- Final Solver: Prospect Pool -->
 <div class="card">
-  <h2>Prospect Pool <span class="badge">10 Microbes</span></h2>
+  <h2>Final Solver <span class="badge">Step 4 — Pick Best 3</span></h2>
+  <div class="instructions" style="margin-bottom:14px">
+    Your full 10-microbe pool. You can <strong>auto-fill from builder</strong> or enter manually. Click <strong>Find Best Combinations</strong> to evaluate all 120 combos.
+  </div>
   <div class="microbe-table-wrap">
     <table id="microbeTable">
       <thead>
         <tr>
-          <th>#</th>
-          <th id="th-attr1">Attr 1</th>
-          <th id="th-attr2">Attr 2</th>
-          <th id="th-attr3">Attr 3</th>
-          <th style="color:var(--green)">Desired</th>
-          <th style="color:var(--red)">Undesired</th>
+          <th>#</th><th>A1</th><th>A2</th><th>A3</th>
+          <th style="color:var(--green)">D</th><th style="color:var(--red)">U</th>
         </tr>
       </thead>
       <tbody id="microbeBody"></tbody>
     </table>
   </div>
   <div class="actions">
-    <button class="btn btn-secondary" onclick="clearAll()">Clear All</button>
-    <button class="btn btn-secondary" onclick="loadExample()">Load Example</button>
+    <button class="btn btn-secondary" onclick="clearFinal()">Clear All</button>
+    <button class="btn btn-secondary" onclick="copyFromBuilder()">Auto-fill from Builder</button>
     <button class="btn btn-primary" onclick="solve()">Find Best Combinations</button>
   </div>
 </div>
@@ -411,9 +494,242 @@
 
 <script>
 const MICROBE_COUNT = 10;
+const BASE_COUNT = 6;
+const ROUNDS = 4;
 let allResults = [];
+let builderPool = []; // locked microbes from builder (up to 10)
 
-function init() {
+// ─── Utility: score a pool of microbes ───
+function scorePool(pool, req) {
+  let best = 0;
+  let perfectCount = 0;
+  const n = pool.length;
+  for (let i = 0; i < n - 2; i++) {
+    for (let j = i + 1; j < n - 1; j++) {
+      for (let k = j + 1; k < n; k++) {
+        const c = [pool[i], pool[j], pool[k]];
+        const eff = comboEfficiency(c, req);
+        if (eff > best) best = eff;
+        if (eff === 100) perfectCount++;
+      }
+    }
+  }
+  return { best, perfectCount };
+}
+
+function comboEfficiency(combo, req) {
+  const avg1 = (combo[0].a1 + combo[1].a1 + combo[2].a1) / 3;
+  const avg2 = (combo[0].a2 + combo[1].a2 + combo[2].a2) / 3;
+  const avg3 = (combo[0].a3 + combo[1].a3 + combo[2].a3) / 3;
+  let pen = 0;
+  if (avg1 < req.a1Min || avg1 > req.a1Max) pen += 20;
+  if (avg2 < req.a2Min || avg2 > req.a2Max) pen += 20;
+  if (avg3 < req.a3Min || avg3 > req.a3Max) pen += 20;
+  if (!combo.some(m => m.hasDesired)) pen += 20;
+  combo.forEach(m => { if (m.hasUndesired) pen += 20; });
+  return Math.max(0, 100 - pen);
+}
+
+function getReq() {
+  return {
+    a1Min: parseFloat(document.getElementById('attr1Min').value),
+    a1Max: parseFloat(document.getElementById('attr1Max').value),
+    a2Min: parseFloat(document.getElementById('attr2Min').value),
+    a2Max: parseFloat(document.getElementById('attr2Max').value),
+    a3Min: parseFloat(document.getElementById('attr3Min').value),
+    a3Max: parseFloat(document.getElementById('attr3Max').value),
+  };
+}
+
+function reqValid(req) {
+  return ![req.a1Min, req.a1Max, req.a2Min, req.a2Max, req.a3Min, req.a3Max].some(isNaN);
+}
+
+// ─── Build base microbes table (6 rows) ───
+function initBase() {
+  const tbody = document.getElementById('baseBody');
+  for (let i = 0; i < BASE_COUNT; i++) {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td style="color:var(--muted);font-weight:600">${i + 1}</td>
+      <td><input type="number" id="b${i}a1" min="1" max="10"></td>
+      <td><input type="number" id="b${i}a2" min="1" max="10"></td>
+      <td><input type="number" id="b${i}a3" min="1" max="10"></td>
+      <td><input type="checkbox" class="trait-check desired" id="b${i}d"></td>
+      <td><input type="checkbox" class="trait-check undesired" id="b${i}u"></td>
+    `;
+    tbody.appendChild(tr);
+    mutualExclude(`b${i}d`, `b${i}u`);
+  }
+}
+
+// ─── Build 4 rounds ───
+function initRounds() {
+  const container = document.getElementById('roundsContainer');
+  for (let r = 0; r < ROUNDS; r++) {
+    const num = BASE_COUNT + r + 1; // microbe 7, 8, 9, 10
+    const div = document.createElement('div');
+    div.className = 'builder-round round-pending';
+    div.id = `round${r}`;
+    div.innerHTML = `
+      <h3>Round ${r + 1} — Pick Microbe #${num} <span class="round-badge">Pending</span></h3>
+      <div id="round${r}locked" class="locked-microbes"></div>
+      <div class="microbe-table-wrap">
+        <table>
+          <thead><tr>
+            <th>Option</th><th>A1</th><th>A2</th><th>A3</th>
+            <th style="color:var(--green)">D</th><th style="color:var(--red)">U</th>
+            <th>Score</th>
+          </tr></thead>
+          <tbody>
+            <tr id="r${r}c0row">
+              <td style="color:var(--muted);font-weight:600">A</td>
+              <td><input type="number" id="r${r}c0a1" min="1" max="10"></td>
+              <td><input type="number" id="r${r}c0a2" min="1" max="10"></td>
+              <td><input type="number" id="r${r}c0a3" min="1" max="10"></td>
+              <td><input type="checkbox" class="trait-check desired" id="r${r}c0d"></td>
+              <td><input type="checkbox" class="trait-check undesired" id="r${r}c0u"></td>
+              <td id="r${r}c0score" style="font-size:0.78rem;color:var(--muted)">—</td>
+            </tr>
+            <tr id="r${r}c1row">
+              <td style="color:var(--muted);font-weight:600">B</td>
+              <td><input type="number" id="r${r}c1a1" min="1" max="10"></td>
+              <td><input type="number" id="r${r}c1a2" min="1" max="10"></td>
+              <td><input type="number" id="r${r}c1a3" min="1" max="10"></td>
+              <td><input type="checkbox" class="trait-check desired" id="r${r}c1d"></td>
+              <td><input type="checkbox" class="trait-check undesired" id="r${r}c1u"></td>
+              <td id="r${r}c1score" style="font-size:0.78rem;color:var(--muted)">—</td>
+            </tr>
+            <tr id="r${r}c2row">
+              <td style="color:var(--muted);font-weight:600">C</td>
+              <td><input type="number" id="r${r}c2a1" min="1" max="10"></td>
+              <td><input type="number" id="r${r}c2a2" min="1" max="10"></td>
+              <td><input type="number" id="r${r}c2a3" min="1" max="10"></td>
+              <td><input type="checkbox" class="trait-check desired" id="r${r}c2d"></td>
+              <td><input type="checkbox" class="trait-check undesired" id="r${r}c2u"></td>
+              <td id="r${r}c2score" style="font-size:0.78rem;color:var(--muted)">—</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="actions" style="margin-top:10px">
+        <button class="btn btn-success" onclick="evalRound(${r})">Evaluate Round ${r + 1}</button>
+      </div>
+      <div id="round${r}result" style="margin-top:8px"></div>
+    `;
+    container.appendChild(div);
+    for (let c = 0; c < 3; c++) {
+      mutualExclude(`r${r}c${c}d`, `r${r}c${c}u`);
+    }
+  }
+}
+
+function mutualExclude(id1, id2) {
+  document.getElementById(id1).addEventListener('change', (e) => {
+    if (e.target.checked) document.getElementById(id2).checked = false;
+  });
+  document.getElementById(id2).addEventListener('change', (e) => {
+    if (e.target.checked) document.getElementById(id1).checked = false;
+  });
+}
+
+function readMicrobe(prefix) {
+  const a1 = parseFloat(document.getElementById(`${prefix}a1`).value);
+  const a2 = parseFloat(document.getElementById(`${prefix}a2`).value);
+  const a3 = parseFloat(document.getElementById(`${prefix}a3`).value);
+  const hasDesired = document.getElementById(`${prefix}d`).checked;
+  const hasUndesired = document.getElementById(`${prefix}u`).checked;
+  if (isNaN(a1) || isNaN(a2) || isNaN(a3)) return null;
+  return { a1, a2, a3, hasDesired, hasUndesired };
+}
+
+function getBaseMicrobes() {
+  const arr = [];
+  for (let i = 0; i < BASE_COUNT; i++) {
+    const m = readMicrobe(`b${i}`);
+    if (!m) return null;
+    m.num = i + 1;
+    arr.push(m);
+  }
+  return arr;
+}
+
+// ─── Evaluate a round ───
+function evalRound(roundIdx) {
+  const req = getReq();
+  if (!reqValid(req)) { alert('Please fill in all target ranges first.'); return; }
+
+  // Get current pool: base + winners of previous rounds
+  const base = getBaseMicrobes();
+  if (!base) { alert('Please fill in all 6 base microbes first.'); return; }
+
+  let pool = [...base];
+  // Add winners from previous rounds
+  for (let prev = 0; prev < roundIdx; prev++) {
+    const winner = builderPool[prev];
+    if (!winner) { alert(`Please evaluate Round ${prev + 1} first.`); return; }
+    pool.push(winner);
+  }
+
+  // Read 3 candidates
+  const candidates = [];
+  for (let c = 0; c < 3; c++) {
+    const m = readMicrobe(`r${roundIdx}c${c}`);
+    if (!m) { alert(`Please fill in all 3 attributes for all 3 candidates in Round ${roundIdx + 1}.`); return; }
+    m.num = BASE_COUNT + roundIdx + 1;
+    m.label = ['A', 'B', 'C'][c];
+    candidates.push(m);
+  }
+
+  // Score each candidate: add to pool, count perfect combos
+  const scores = candidates.map(cand => {
+    const testPool = [...pool, cand];
+    return scorePool(testPool, req);
+  });
+
+  // Find best
+  let bestIdx = 0;
+  for (let i = 1; i < 3; i++) {
+    if (scores[i].perfectCount > scores[bestIdx].perfectCount) bestIdx = i;
+    else if (scores[i].perfectCount === scores[bestIdx].perfectCount && scores[i].best > scores[bestIdx].best) bestIdx = i;
+  }
+
+  // Display scores
+  for (let c = 0; c < 3; c++) {
+    const cell = document.getElementById(`r${roundIdx}c${c}score`);
+    const isBest = c === bestIdx;
+    const s = scores[c];
+    cell.innerHTML = `<span class="pick-label ${isBest ? 'pick-best' : s.perfectCount > 0 ? 'pick-ok' : 'pick-bad'}">${s.perfectCount} perfect</span>`;
+    const row = document.getElementById(`r${roundIdx}c${c}row`);
+    row.style.background = isBest ? 'rgba(45,212,191,0.08)' : '';
+  }
+
+  // Lock winner
+  builderPool[roundIdx] = candidates[bestIdx];
+  const roundDiv = document.getElementById(`round${roundIdx}`);
+  roundDiv.className = 'builder-round round-done';
+  roundDiv.querySelector('.round-badge').textContent = `Best: Option ${candidates[bestIdx].label}`;
+
+  // Show result text
+  const resultDiv = document.getElementById(`round${roundIdx}result`);
+  resultDiv.innerHTML = `<div class="instructions" style="margin:0;border-color:var(--green)"><strong style="color:var(--green)">Winner: Option ${candidates[bestIdx].label}</strong> — adds ${scores[bestIdx].perfectCount} perfect combos (best efficiency: ${scores[bestIdx].best}%). Pool now has ${pool.length + 1} microbes.</div>`;
+
+  // Update locked chips on next round
+  if (roundIdx + 1 < ROUNDS) {
+    updateLockedChips(roundIdx + 1, [...pool, candidates[bestIdx]]);
+  }
+}
+
+function updateLockedChips(roundIdx, pool) {
+  const container = document.getElementById(`round${roundIdx}locked`);
+  container.innerHTML = pool.map(m => {
+    const cls = m.hasDesired ? 'has-desired' : m.hasUndesired ? 'has-undesired' : '';
+    return `<span class="locked-chip ${cls}"><span class="lnum">#${m.num}</span> ${m.a1}/${m.a2}/${m.a3}</span>`;
+  }).join('');
+}
+
+// ─── Final Solver Table (10 rows) ───
+function initFinal() {
   const tbody = document.getElementById('microbeBody');
   for (let i = 0; i < MICROBE_COUNT; i++) {
     const tr = document.createElement('tr');
@@ -422,109 +738,56 @@ function init() {
       <td><input type="number" id="m${i}a1" min="1" max="10"></td>
       <td><input type="number" id="m${i}a2" min="1" max="10"></td>
       <td><input type="number" id="m${i}a3" min="1" max="10"></td>
-      <td><input type="checkbox" class="trait-check desired" id="m${i}desired"></td>
-      <td><input type="checkbox" class="trait-check undesired" id="m${i}undesired"></td>
+      <td><input type="checkbox" class="trait-check desired" id="m${i}d"></td>
+      <td><input type="checkbox" class="trait-check undesired" id="m${i}u"></td>
     `;
     tbody.appendChild(tr);
-    // Make desired/undesired mutually exclusive
-    document.getElementById(`m${i}desired`).addEventListener('change', ((idx) => (e) => {
-      if (e.target.checked) document.getElementById(`m${idx}undesired`).checked = false;
-    })(i));
-    document.getElementById(`m${i}undesired`).addEventListener('change', ((idx) => (e) => {
-      if (e.target.checked) document.getElementById(`m${idx}desired`).checked = false;
-    })(i));
+    mutualExclude(`m${i}d`, `m${i}u`);
+  }
+}
+
+function copyFromBuilder() {
+  const base = getBaseMicrobes();
+  if (!base) { alert('Please fill in all 6 base microbes first.'); return; }
+
+  const pool = [...base];
+  for (let r = 0; r < ROUNDS; r++) {
+    if (builderPool[r]) pool.push(builderPool[r]);
   }
 
-  // Sync attribute names to table headers
-  ['attr1Name', 'attr2Name', 'attr3Name'].forEach((id, idx) => {
-    document.getElementById(id).addEventListener('input', (e) => {
-      document.getElementById(`th-attr${idx+1}`).textContent = e.target.value || `Attr ${idx+1}`;
-    });
-  });
-
-  // Enter key moves to next blank input
-  function jumpToNextBlank(from) {
-    const allInputs = [...document.querySelectorAll('input[type="number"], input[type="text"]')];
-    const currentIdx = allInputs.indexOf(from);
-    // First pass: find next blank
-    for (let offset = 1; offset <= allInputs.length; offset++) {
-      const inp = allInputs[(currentIdx + offset) % allInputs.length];
-      if (inp.value === '') { inp.focus(); inp.select(); return; }
-    }
-    // All filled — just move to next input
-    if (currentIdx >= 0 && currentIdx < allInputs.length - 1) {
-      allInputs[currentIdx + 1].focus();
-      allInputs[currentIdx + 1].select();
-    } else {
-      solve();
-    }
-  }
-  // Backspace on empty input moves to previous blank (or previous input)
-  function jumpToPrevBlank(from) {
-    const allInputs = [...document.querySelectorAll('input[type="number"], input[type="text"]')];
-    const currentIdx = allInputs.indexOf(from);
-    for (let offset = 1; offset <= allInputs.length; offset++) {
-      const inp = allInputs[(currentIdx - offset + allInputs.length) % allInputs.length];
-      if (inp.value === '') { inp.focus(); inp.select(); return; }
-    }
-    if (currentIdx > 0) {
-      allInputs[currentIdx - 1].focus();
-      allInputs[currentIdx - 1].select();
-    }
-  }
-
-  document.querySelectorAll('input[type="number"], input[type="text"]').forEach(inp => {
-    inp.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        e.stopPropagation();
-        jumpToNextBlank(e.target);
-      }
-      if (e.key === 'Backspace' && e.target.value === '') {
-        e.preventDefault();
-        e.stopPropagation();
-        jumpToPrevBlank(e.target);
-      }
-    });
+  pool.forEach((m, i) => {
+    document.getElementById(`m${i}a1`).value = m.a1;
+    document.getElementById(`m${i}a2`).value = m.a2;
+    document.getElementById(`m${i}a3`).value = m.a3;
+    document.getElementById(`m${i}d`).checked = m.hasDesired;
+    document.getElementById(`m${i}u`).checked = m.hasUndesired;
   });
 }
 
-function getMicrobes() {
+function clearFinal() {
+  for (let i = 0; i < MICROBE_COUNT; i++) {
+    document.getElementById(`m${i}a1`).value = '';
+    document.getElementById(`m${i}a2`).value = '';
+    document.getElementById(`m${i}a3`).value = '';
+    document.getElementById(`m${i}d`).checked = false;
+    document.getElementById(`m${i}u`).checked = false;
+  }
+  document.getElementById('resultsSection').style.display = 'none';
+}
+
+// ─── Final Solver ───
+function solve() {
   const microbes = [];
   for (let i = 0; i < MICROBE_COUNT; i++) {
-    const a1 = parseFloat(document.getElementById(`m${i}a1`).value);
-    const a2 = parseFloat(document.getElementById(`m${i}a2`).value);
-    const a3 = parseFloat(document.getElementById(`m${i}a3`).value);
-    const hasDesired = document.getElementById(`m${i}desired`).checked;
-    const hasUndesired = document.getElementById(`m${i}undesired`).checked;
-    if (isNaN(a1) || isNaN(a2) || isNaN(a3)) return null;
-    microbes.push({ idx: i, num: i + 1, a1, a2, a3, hasDesired, hasUndesired });
+    const m = readMicrobe(`m${i}`);
+    if (!m) { alert('Please fill in all 3 attribute values for every microbe.'); return; }
+    m.num = i + 1;
+    microbes.push(m);
   }
-  return microbes;
-}
-
-function getRequirements() {
-  return {
-    attr1: { name: document.getElementById('attr1Name').value || 'Attr 1', min: parseFloat(document.getElementById('attr1Min').value), max: parseFloat(document.getElementById('attr1Max').value) },
-    attr2: { name: document.getElementById('attr2Name').value || 'Attr 2', min: parseFloat(document.getElementById('attr2Min').value), max: parseFloat(document.getElementById('attr2Max').value) },
-    attr3: { name: document.getElementById('attr3Name').value || 'Attr 3', min: parseFloat(document.getElementById('attr3Min').value), max: parseFloat(document.getElementById('attr3Max').value) },
-  };
-}
-
-function solve() {
-  const microbes = getMicrobes();
-  if (!microbes) {
-    alert('Please fill in all 3 attribute values for every microbe.');
-    return;
-  }
-  const req = getRequirements();
-  if ([req.attr1.min, req.attr1.max, req.attr2.min, req.attr2.max, req.attr3.min, req.attr3.max].some(isNaN)) {
-    alert('Please fill in all target ranges.');
-    return;
-  }
+  const req = getReq();
+  if (!reqValid(req)) { alert('Please fill in all target ranges.'); return; }
 
   const results = [];
-  // Generate all C(10,3) = 120 combinations
   for (let i = 0; i < MICROBE_COUNT - 2; i++) {
     for (let j = i + 1; j < MICROBE_COUNT - 1; j++) {
       for (let k = j + 1; k < MICROBE_COUNT; k++) {
@@ -535,50 +798,31 @@ function solve() {
 
         let penalties = 0;
         const checks = [];
+        const a1Pass = avg1 >= req.a1Min && avg1 <= req.a1Max;
+        const a2Pass = avg2 >= req.a2Min && avg2 <= req.a2Max;
+        const a3Pass = avg3 >= req.a3Min && avg3 <= req.a3Max;
 
-        // Attribute range checks
-        const a1Pass = avg1 >= req.attr1.min && avg1 <= req.attr1.max;
-        const a2Pass = avg2 >= req.attr2.min && avg2 <= req.attr2.max;
-        const a3Pass = avg3 >= req.attr3.min && avg3 <= req.attr3.max;
-
-        if (!a1Pass) { penalties += 20; checks.push(`${req.attr1.name} avg out of range`); }
-        if (!a2Pass) { penalties += 20; checks.push(`${req.attr2.name} avg out of range`); }
-        if (!a3Pass) { penalties += 20; checks.push(`${req.attr3.name} avg out of range`); }
-
-        // Desired trait check
-        const hasDesired = combo.some(m => m.hasDesired);
-        if (!hasDesired) { penalties += 20; checks.push('Missing desired trait'); }
-
-        // Undesired trait check
+        if (!a1Pass) { penalties += 20; checks.push('A1 avg out of range'); }
+        if (!a2Pass) { penalties += 20; checks.push('A2 avg out of range'); }
+        if (!a3Pass) { penalties += 20; checks.push('A3 avg out of range'); }
+        if (!combo.some(m => m.hasDesired)) { penalties += 20; checks.push('Missing desired trait'); }
         combo.forEach(m => {
-          if (m.hasUndesired) {
-            penalties += 20;
-            checks.push(`Microbe #${m.num} has undesired trait`);
-          }
+          if (m.hasUndesired) { penalties += 20; checks.push(`#${m.num} has undesired trait`); }
         });
 
         const efficiency = Math.max(0, 100 - penalties);
-
-        results.push({
-          combo,
-          avg1, avg2, avg3,
-          a1Pass, a2Pass, a3Pass,
-          hasDesired,
-          efficiency,
-          checks
-        });
+        results.push({ combo, avg1, avg2, avg3, a1Pass, a2Pass, a3Pass, efficiency, checks });
       }
     }
   }
 
   results.sort((a, b) => {
     if (b.efficiency !== a.efficiency) return b.efficiency - a.efficiency;
-    // Tiebreak: prefer combos closer to range midpoints
     const midScore = (r) => {
-      const mid1 = (req.attr1.min + req.attr1.max) / 2;
-      const mid2 = (req.attr2.min + req.attr2.max) / 2;
-      const mid3 = (req.attr3.min + req.attr3.max) / 2;
-      return Math.abs(r.avg1 - mid1) + Math.abs(r.avg2 - mid2) + Math.abs(r.avg3 - mid3);
+      const m1 = (req.a1Min + req.a1Max) / 2;
+      const m2 = (req.a2Min + req.a2Max) / 2;
+      const m3 = (req.a3Min + req.a3Max) / 2;
+      return Math.abs(r.avg1 - m1) + Math.abs(r.avg2 - m2) + Math.abs(r.avg3 - m3);
     };
     return midScore(a) - midScore(b);
   });
@@ -590,13 +834,11 @@ function solve() {
 }
 
 function renderResults(results) {
-  const req = getRequirements();
+  const req = getReq();
   const container = document.getElementById('resultsContainer');
   document.getElementById('resultsBadge').textContent = `${results.length} combinations`;
-
   const perfect = results.filter(r => r.efficiency === 100).length;
-  document.getElementById('resultCount').textContent =
-    `${perfect} perfect (100%) out of ${results.length} shown`;
+  document.getElementById('resultCount').textContent = `${perfect} perfect (100%) out of ${results.length} shown`;
 
   if (results.length === 0) {
     container.innerHTML = '<div class="no-results">No combinations match this filter.</div>';
@@ -606,7 +848,6 @@ function renderResults(results) {
   container.innerHTML = results.map((r, idx) => {
     const eClass = r.efficiency === 100 ? 'perfect' : r.efficiency >= 80 ? 'good' : 'bad';
     const eColor = r.efficiency === 100 ? 'e100' : r.efficiency >= 80 ? 'e80' : r.efficiency >= 60 ? 'e60' : 'elow';
-
     return `
       <div class="result-card ${eClass}">
         <div class="result-header">
@@ -619,26 +860,26 @@ function renderResults(results) {
               : m.hasUndesired ? '<span class="trait-tag undesired">Undesired</span>' : '';
             return `<div class="microbe-chip">
               <div class="name">Microbe #${m.num}</div>
-              <div class="vals">${req.attr1.name}: ${m.a1} | ${req.attr2.name}: ${m.a2} | ${req.attr3.name}: ${m.a3}</div>
+              <div class="vals">A1: ${m.a1} | A2: ${m.a2} | A3: ${m.a3}</div>
               ${traitTag}
             </div>`;
           }).join('')}
         </div>
         <div class="result-averages">
           <div class="avg-item ${r.a1Pass ? 'pass' : 'fail'}">
-            <div class="label">${req.attr1.name} Avg</div>
+            <div class="label">A1 Avg</div>
             <div class="value">${r.avg1.toFixed(2)}</div>
-            <div class="range">${req.attr1.min} – ${req.attr1.max}</div>
+            <div class="range">${req.a1Min} – ${req.a1Max}</div>
           </div>
           <div class="avg-item ${r.a2Pass ? 'pass' : 'fail'}">
-            <div class="label">${req.attr2.name} Avg</div>
+            <div class="label">A2 Avg</div>
             <div class="value">${r.avg2.toFixed(2)}</div>
-            <div class="range">${req.attr2.min} – ${req.attr2.max}</div>
+            <div class="range">${req.a2Min} – ${req.a2Max}</div>
           </div>
           <div class="avg-item ${r.a3Pass ? 'pass' : 'fail'}">
-            <div class="label">${req.attr3.name} Avg</div>
+            <div class="label">A3 Avg</div>
             <div class="value">${r.avg3.toFixed(2)}</div>
-            <div class="range">${req.attr3.min} – ${req.attr3.max}</div>
+            <div class="range">${req.a3Min} – ${req.a3Max}</div>
           </div>
         </div>
         ${r.checks.length > 0 ? `<div class="penalties">${r.checks.map(c => `<span class="penalty">-20%: ${c}</span>`).join(' &nbsp;|&nbsp; ')}</div>` : '<div class="penalties"><span class="pass">All checks passed</span></div>'}
@@ -650,67 +891,50 @@ function renderResults(results) {
 function filterResults(filter, btn) {
   document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
-
   let filtered;
   if (filter === 'all') filtered = allResults;
   else if (filter === '100') filtered = allResults.filter(r => r.efficiency === 100);
   else if (filter === '80') filtered = allResults.filter(r => r.efficiency === 80);
   else if (filter === '60') filtered = allResults.filter(r => r.efficiency === 60);
   else filtered = allResults.filter(r => r.efficiency < 60);
-
   renderResults(filtered);
 }
 
-function clearAll() {
-  for (let i = 0; i < MICROBE_COUNT; i++) {
-    document.getElementById(`m${i}a1`).value = '';
-    document.getElementById(`m${i}a2`).value = '';
-    document.getElementById(`m${i}a3`).value = '';
-    document.getElementById(`m${i}desired`).checked = false;
-    document.getElementById(`m${i}undesired`).checked = false;
+// ─── Enter/Backspace navigation ───
+function setupNav() {
+  function getAll() {
+    return [...document.querySelectorAll('input[type="number"]')];
   }
-  document.getElementById('resultsSection').style.display = 'none';
-}
-
-function loadExample() {
-  // Example from game research
-  document.getElementById('attr1Name').value = 'Density';
-  document.getElementById('attr2Name').value = 'Energy';
-  document.getElementById('attr3Name').value = 'Size';
-  document.getElementById('attr1Min').value = 6;
-  document.getElementById('attr1Max').value = 8;
-  document.getElementById('attr2Min').value = 2;
-  document.getElementById('attr2Max').value = 4;
-  document.getElementById('attr3Min').value = 8;
-  document.getElementById('attr3Max').value = 10;
-  // Update headers
-  document.getElementById('th-attr1').textContent = 'Density';
-  document.getElementById('th-attr2').textContent = 'Energy';
-  document.getElementById('th-attr3').textContent = 'Size';
-
-  const examples = [
-    { a1: 8, a2: 3, a3: 8, desired: true, undesired: false },
-    { a1: 8, a2: 2, a3: 10, desired: false, undesired: false },
-    { a1: 4, a2: 5, a3: 8, desired: false, undesired: false },
-    { a1: 7, a2: 3, a3: 9, desired: true, undesired: false },
-    { a1: 6, a2: 4, a3: 7, desired: false, undesired: true },
-    { a1: 9, a2: 1, a3: 10, desired: false, undesired: false },
-    { a1: 5, a2: 6, a3: 9, desired: false, undesired: false },
-    { a1: 7, a2: 2, a3: 8, desired: true, undesired: false },
-    { a1: 8, a2: 4, a3: 10, desired: false, undesired: false },
-    { a1: 6, a2: 3, a3: 9, desired: false, undesired: true },
-  ];
-
-  examples.forEach((m, i) => {
-    document.getElementById(`m${i}a1`).value = m.a1;
-    document.getElementById(`m${i}a2`).value = m.a2;
-    document.getElementById(`m${i}a3`).value = m.a3;
-    document.getElementById(`m${i}desired`).checked = m.desired;
-    document.getElementById(`m${i}undesired`).checked = m.undesired;
+  function jumpNext(from) {
+    const all = getAll();
+    const idx = all.indexOf(from);
+    for (let off = 1; off <= all.length; off++) {
+      const inp = all[(idx + off) % all.length];
+      if (inp.value === '') { inp.focus(); inp.select(); return; }
+    }
+    if (idx >= 0 && idx < all.length - 1) { all[idx + 1].focus(); all[idx + 1].select(); }
+  }
+  function jumpPrev(from) {
+    const all = getAll();
+    const idx = all.indexOf(from);
+    for (let off = 1; off <= all.length; off++) {
+      const inp = all[(idx - off + all.length) % all.length];
+      if (inp.value === '') { inp.focus(); inp.select(); return; }
+    }
+    if (idx > 0) { all[idx - 1].focus(); all[idx - 1].select(); }
+  }
+  document.addEventListener('keydown', (e) => {
+    if (e.target.tagName !== 'INPUT' || e.target.type !== 'number') return;
+    if (e.key === 'Enter') { e.preventDefault(); jumpNext(e.target); }
+    if (e.key === 'Backspace' && e.target.value === '') { e.preventDefault(); jumpPrev(e.target); }
   });
 }
 
-init();
+// ─── Init ───
+initBase();
+initRounds();
+initFinal();
+setupNav();
 </script>
 </body>
 </html>
